@@ -10,7 +10,35 @@ class ProgressiveRiskManager:
         self.PAUSE_L1, self.PAUSE_L2, self.PAUSE_L3 = 7, 120, 720
         self.L3_THRESHOLD = -0.05
         self.state = self.load_state()
+    def set_running_status(self, is_running: bool):
+        """Global toggle for signal processing logic."""
+        with self.lock:
+            self.state['is_running'] = is_running
+            self.save_state()
 
+    def get_statistics(self) -> str:
+        """Aggregates historical trade data for performance reporting."""
+        with self.lock:
+            trades = self.state.get('trade_history', [])
+        
+        if not trades: 
+            return "📊 <b>Performance data unavailable:</b> No closed trades found."
+        
+        # Calculate key performance indicators (KPIs)
+        rets = [t['ret'] for t in trades]
+        total_pnl = (np.prod([1 + r for r in rets]) - 1) * 100
+        winrate = (len([r for r in rets if r > 0]) / len(rets)) * 100
+        
+        gross_profit = sum([r for r in rets if r > 0])
+        gross_loss = abs(sum([r for r in rets if r < 0]))
+        pf = gross_profit / gross_loss if gross_loss != 0 else float('inf')
+        
+        return (f"📈 <b>Strategy Performance:</b>\n"
+                f"━━━━━━━━━━━━━━━━━━\n"
+                f"💰 Compounded PnL: <b>{total_pnl:.2f}%</b>\n"
+                f"⚖️ Profit Factor: <b>{pf:.2f}</b>\n"
+                f"🎯 Current Winrate: <b>{winrate:.1f}%</b>\n"
+                f"🔢 Sample Size: <b>{len(rets)} trades</b>")
     def load_state(self) -> dict:
         with self.lock:
             if os.path.exists(self.state_file):
