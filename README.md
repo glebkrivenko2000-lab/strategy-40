@@ -29,10 +29,36 @@ Crypto markets are prone to sudden regime shifts (e.g., liquidation cascades). T
 *   **Exchange API:** `ccxt`
 *   **Concurrency:** `threading`
 *   **Deployment:** Designed for `Docker` / `PM2` on headless Linux instances.
-
 ## ⚙️ Installation & Usage
 
 1. Clone the repository:
    ```bash
    git clone https://github.com/yourusername/crypto-execution-engine.git
    cd crypto-execution-engine
+   ```
+
+2. Create a virtual environment and install dependencies:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+3. Setup environment variables:
+   Rename `.env.example` to `.env` and input your Bybit API credentials and Telegram Bot token.
+   ```text
+   BYBIT_API_KEY=your_key_here
+   BYBIT_API_SECRET=your_secret_here
+   IS_TESTNET=True
+   TG_TOKEN=your_tg_token
+   TG_CHAT_ID=your_chat_id
+   ```
+
+4. Run the Engine:
+   ```bash
+   python src/main.py
+   ```
+
+## ⚖️ Disclaimer
+This software is for educational and demonstrative purposes only. It does not constitute financial advice. Trading cryptocurrency derivatives carries a high level of risk.
+```
